@@ -1,0 +1,99 @@
+/* RADIO BYMAFFY — l'identità del sito: colori, barra in alto, saluto, "Dalla redazione", piè di pagina.
+   Si carica DOPO radio.css (testata, lettore, scaletta) e ne ritocca alcune parti. */
+
+:root {
+  --bg: #061238; --yellow: #ffd23f; --surface: #0d2158; --surface2: #12306f;
+  --line: rgba(143, 224, 255, .22); --muted: #b9d6f5; --blue: #8fe0ff;
+  --f-display: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif; --f-osd: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: #fff; font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; line-height: 1.5; }
+a { color: inherit; }
+.wrap { width: min(100% - 32px, 1100px); margin-inline: auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+/* ---------- La testata: foto dello studio e sfumato dall'azzurro al blu notte ---------- */
+.rd__hero { min-height: clamp(620px, 92vh, 800px); }
+.rd__hero::after { background: linear-gradient(180deg, rgba(135, 220, 255, .82) 0%, rgba(40, 130, 230, .64) 42%, rgba(7, 22, 66, .95) 82%, #061238 100%); }
+.rd__in { padding: 96px 0 210px; }
+
+/* ---------- Barra in alto: il marchio piccolo e i collegamenti a Tauranowebtv ---------- */
+.rtop { position: absolute; top: 0; left: 0; right: 0; z-index: 5; padding: 14px 0; }
+.rtop .wrap { display: flex; align-items: center; gap: 14px; }
+.mini { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
+.mini .t { background: var(--yellow); color: #07204f; padding: 0 .5em; transform: skewX(-12deg); box-shadow: 3px 3px 0 rgba(6, 30, 80, .5); }
+.mini .t span { display: block; transform: skewX(12deg); font: italic 800 1.15rem / 1.25 'Barlow Condensed', sans-serif; letter-spacing: .04em; }
+.mini b { font: italic 800 1.8rem / 1 'Barlow Condensed', sans-serif; text-shadow: 0 3px 0 rgba(6, 30, 80, .5); }
+.rtop nav { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.rtop nav a { text-decoration: none; font-size: .88rem; font-weight: 500; padding: 7px 14px; border-radius: 999px; background: rgba(7, 22, 66, .5); border: 1px solid rgba(255, 255, 255, .28); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .15s; }
+.rtop nav a:hover { background: rgba(7, 22, 66, .8); }
+.rtop nav a.ext { border-color: rgba(255, 210, 63, .7); }
+.rtop nav a.ext::after, footer nav a[target]::after { content: ""; }
+
+/* ---------- Il saluto e l'invito ad ascoltare ---------- */
+.hi { margin: 22px auto 0; max-width: 660px; }
+.hi__t { margin: 0 0 6px; font: 700 clamp(1.9rem, 4.6vw, 3rem) / 1.1 'DM Sans', sans-serif; letter-spacing: -.01em; text-shadow: 0 2px 14px rgba(6, 30, 80, .55); }
+.hi__p { margin: 0; font-size: clamp(1.05rem, 2.2vw, 1.3rem); color: #eaf6ff; text-shadow: 0 1px 10px rgba(6, 30, 80, .6); }
+.hi__btns { margin-top: 24px; display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.cta { display: inline-flex; align-items: center; gap: 14px; padding: 15px 32px 15px 16px; border: 0; border-radius: 999px; background: var(--yellow); color: #0a0920; font: 700 1.3rem 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 0 30px rgba(255, 210, 63, .5); transition: transform .15s, background .15s; }
+.cta:hover { background: #ffdd66; transform: scale(1.03); }
+.cta:active { transform: scale(.98); }
+.cta:disabled { opacity: .55; cursor: default; transform: none; animation: none; }
+.cta svg { width: 40px; height: 40px; padding: 9px; border-radius: 50%; background: #0a0920; fill: var(--yellow); }
+.cta .ico-pause { display: none; }
+.rd.is-playing .cta .ico-pause { display: block; }
+.rd.is-playing .cta .ico-play { display: none; }
+.rd:not(.is-playing):not(.is-off) .cta { animation: rd-nudge 2.2s ease-in-out infinite; }
+.ghost { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; text-decoration: none; font-weight: 700; background: rgba(7, 22, 66, .55); border: 1px solid rgba(255, 255, 255, .45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .15s, border-color .15s; }
+.ghost:hover { background: rgba(7, 22, 66, .85); border-color: var(--yellow); }
+.ghost svg { width: 22px; height: 22px; fill: var(--yellow); }
+.hi__sub { margin: 12px 0 0; font-size: .88rem; color: #d6efff; text-shadow: 0 1px 8px rgba(6, 30, 80, .6); }
+
+/* ---------- Scaletta e brani (ritocchi) ---------- */
+.rd__cols { padding: 54px 0 40px; }
+.rd__col h2 { font: italic 800 2.1rem 'Barlow Condensed', sans-serif; letter-spacing: .02em; text-transform: uppercase; color: var(--yellow); margin: 0 0 14px; }
+.rd__list li, .rd__recent li { background: var(--surface); }
+.rd__list li.is-now { background: linear-gradient(90deg, rgba(255, 210, 63, .16), var(--surface) 70%); }
+
+/* ---------- Dalla redazione di Tauranowebtv: i soli riferimenti alla TV e al canale ---------- */
+.red { padding: 12px 0 70px; }
+.red__box { border-radius: 20px; padding: clamp(20px, 4vw, 34px); background: linear-gradient(135deg, #0f2a6b, #0a1c4d); border: 1px solid var(--line); display: grid; grid-template-columns: 1.1fr 1fr; gap: 26px; align-items: center; }
+.red__box h2 { margin: 0 0 8px; font: italic 800 2.3rem / 1 'Barlow Condensed', sans-serif; text-transform: uppercase; }
+.red__box p { margin: 0; color: var(--muted); }
+.red__btns { display: grid; gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: 14px; text-decoration: none; font-weight: 700; background: rgba(255, 255, 255, .08); border: 1px solid var(--line); transition: transform .15s, background .15s; }
+.btn:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .14); }
+.btn small { display: block; font-weight: 400; color: var(--muted); }
+.btn.y { background: var(--yellow); color: #0a0920; border-color: var(--yellow); }
+.btn.y:hover { background: #ffdd66; }
+.btn.y small { color: #3a3a4a; }
+.btn .ar { font-size: 1.4rem; }
+.rd__tv { margin-top: 22px; padding: 16px 18px; border-radius: 14px; background: rgba(255, 255, 255, .06); border: 1px solid var(--line); display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.rd__tv span { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.rd__tv b { display: block; font-size: 1.02rem; line-height: 1.3; }
+.rd__tv a { color: var(--yellow); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.rd__tv a:hover { text-decoration: underline; }
+
+/* ---------- Piè di pagina ---------- */
+footer { border-top: 1px solid var(--line); padding: 34px 0 50px; color: var(--muted); font-size: .92rem; }
+footer .wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+footer .mini { margin-bottom: 10px; }
+footer p { margin: 0; }
+footer nav { display: grid; gap: 6px; justify-items: start; }
+footer nav a { text-decoration: none; }
+footer nav a:hover { color: var(--yellow); }
+body.radio-on footer { padding-bottom: 100px; }
+.noscript { margin: 0; padding: 14px 18px; background: var(--surface); color: var(--muted); }
+
+@media (max-width: 760px) {
+  .red__box, footer .wrap { grid-template-columns: 1fr; }
+  .rtop nav a:not(.ext) { display: none; }
+  .rtop nav a.ext { padding: 6px 11px; font-size: .8rem; }
+  .mini b { font-size: 1.45rem; }
+  .mini .t span { font-size: 1rem; }
+  .rd__in { padding: 84px 0 180px; }
+  .hi__btns { flex-direction: column; gap: 10px; }
+  .cta { font-size: 1.2rem; }
+}

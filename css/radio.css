@@ -1,0 +1,125 @@
+/* RADIO BYMAFFY — la pagina della radio.
+   Look scelto dall'utente: studio da radiovisione, sfondo sfumato dall'azzurro chiaro al blu notte,
+   marchio con etichetta gialla "RADIO" + BYMAFFY enorme in corsivo. */
+
+.rd { scroll-margin-top: 0; background: var(--bg); }
+.rd[hidden] { display: none; }
+
+/* ---------- La grande testata con lo studio ---------- */
+.rd__hero { position: relative; isolation: isolate; overflow: hidden; min-height: clamp(540px, 82vh, 720px); display: flex; flex-direction: column; justify-content: center; text-align: center; color: #fff; background: #07163f; }
+.rd__bg { position: absolute; inset: -30px; z-index: -2; background: url(../img/studio-radio.jpg) center / cover no-repeat; filter: saturate(1.15) blur(2px); }
+.rd__hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(135, 220, 255, .82) 0%, rgba(40, 130, 230, .64) 42%, rgba(7, 22, 66, .95) 82%, rgba(10, 9, 32, 1) 100%); }
+.rd__in { padding: 60px 0 190px; }
+
+.rd__pill { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(255, 59, 71, .85); background: rgba(7, 22, 66, .55); color: #ff9aa1; font-weight: 700; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; }
+.rd__pill i { width: 10px; height: 10px; border-radius: 50%; background: #ff3b47; box-shadow: 0 0 12px #ff3b47; animation: rd-pulse 1.4s ease-in-out infinite; }
+
+.rd__logo { margin: 22px 0 6px; display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 22px); flex-wrap: wrap; line-height: 1; }
+.rd__tag { display: inline-block; background: var(--yellow); color: #07204f; padding: .05em .5em; transform: skewX(-12deg); box-shadow: 6px 6px 0 rgba(6, 30, 80, .5); }
+.rd__tag span { display: block; transform: skewX(12deg); font: italic 800 clamp(2.2rem, 6.4vw, 4.2rem) / 1.05 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif; letter-spacing: .04em; }
+.rd__name { font: italic 800 clamp(5rem, 15vw, 10rem) / .9 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif; letter-spacing: .01em; color: #fff; text-shadow: 0 6px 0 rgba(6, 30, 80, .55), 0 0 40px rgba(15, 70, 160, .4); }
+
+.rd__eq { display: flex; gap: 5px; align-items: flex-end; justify-content: center; height: 28px; margin: 14px 0 0; }
+.rd__eq i { display: block; width: 6px; height: 6px; border-radius: 1px; background: #fff; animation: rd-eq .9s ease-in-out infinite alternate; }
+.rd__eq i:nth-child(2n) { background: #8fe0ff; animation-duration: 1.1s; animation-delay: -.3s; }
+.rd__eq i:nth-child(3n) { background: var(--yellow); animation-duration: .7s; }
+.rd__eq i:nth-child(5n) { animation-duration: 1.35s; animation-delay: -.6s; }
+.rd__eq i:nth-child(7n) { animation-duration: .8s; animation-delay: -.2s; }
+
+.rd__lead { margin: 18px 0 0; font-size: clamp(1.05rem, 2.2vw, 1.3rem); }
+.rd__lead small { display: block; margin-top: 8px; color: #d6efff; letter-spacing: .3em; text-transform: uppercase; font-size: .72rem; }
+
+/* ---------- Il lettore sulla foto ---------- */
+.rd__player { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); width: min(100% - 32px, 1100px); display: flex; align-items: center; gap: 16px; padding: 12px 18px 12px 12px; border-radius: 18px; background: rgba(7, 22, 66, .74); border: 1px solid rgba(160, 220, 255, .45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); text-align: left; box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .7); }
+.rd__play { flex: none; width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--yellow); color: #0a0920; display: grid; place-items: center; cursor: pointer; box-shadow: 0 0 24px rgba(255, 210, 63, .5); transition: transform .15s, background .15s; }
+.rd__play:hover { background: #ffdd66; transform: scale(1.05); }
+.rd__play:active { transform: scale(.97); }
+.rd__play:disabled { opacity: .5; cursor: default; transform: none; animation: none; }
+.rd__play svg { width: 28px; height: 28px; fill: currentColor; }
+.rd__play .ico-pause { display: none; }
+.rd.is-playing .rd__play .ico-pause { display: block; }
+.rd.is-playing .rd__play .ico-play { display: none; }
+.rd:not(.is-playing):not(.is-off) .rd__play { animation: rd-nudge 2.2s ease-in-out infinite; }
+
+.rd__now { flex: 1; min-width: 0; display: grid; line-height: 1.3; }
+.rd__on { font-size: .68rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #ff9aa1; }
+.rd__now strong { font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rd__tit { color: #d6efff; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.rd__bars { flex: none; display: flex; gap: 3px; align-items: flex-end; height: 26px; opacity: .45; }
+.rd__bars i { display: block; width: 4px; height: 5px; background: #8fe0ff; }
+.rd__bars i:nth-child(2n) { background: #fff; }
+.rd__bars i:nth-child(5n) { background: var(--yellow); }
+.rd.is-playing .rd__bars { opacity: 1; }
+.rd.is-playing .rd__bars i { animation: rd-bar .9s ease-in-out infinite alternate; }
+.rd.is-playing .rd__bars i:nth-child(2n) { animation-duration: .6s; }
+.rd.is-playing .rd__bars i:nth-child(3n) { animation-duration: 1.15s; }
+.rd.is-playing .rd__bars i:nth-child(5n) { animation-duration: .75s; }
+
+.rd__next { flex: none; text-align: right; font-size: .78rem; color: #d6efff; line-height: 1.3; }
+.rd__next b { display: block; color: #fff; font-size: .92rem; }
+.rd__vol { flex: none; width: 110px; display: grid; }
+.rd__vol input { width: 100%; accent-color: var(--yellow); }
+
+/* ---------- Sotto la testata ---------- */
+.rd__note { margin: 28px 0 0; padding: 14px 18px; border-radius: 14px; background: var(--surface); border: 1px dashed var(--line); color: var(--muted); }
+.rd__cols { display: grid; grid-template-columns: 1.25fr 1fr; gap: 36px; padding: 46px 0 76px; }
+.rd__col h2 { font-family: var(--f-display); font-size: 1.9rem; font-weight: 400; letter-spacing: .05em; text-transform: uppercase; color: var(--yellow); margin: 0 0 14px; }
+
+.rd__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rd__list li { display: grid; grid-template-columns: 118px 1fr auto; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); transition: border-color .2s, background .2s; }
+.rd__list time { font-family: var(--f-osd); font-size: 1.4rem; color: var(--blue); white-space: nowrap; }
+.rd__list b { display: block; }
+.rd__list span { display: block; color: var(--muted); font-size: .88rem; line-height: 1.35; }
+.rd__list em { display: none; font-style: normal; font-weight: 700; font-size: .7rem; letter-spacing: .14em; color: #fff; background: #ff3b47; padding: 4px 10px; border-radius: 999px; }
+.rd__list li.is-now { border-color: var(--yellow); background: linear-gradient(90deg, rgba(255, 210, 63, .15), var(--surface) 70%); }
+.rd__list li.is-now em { display: inline-block; animation: rd-pulse 1.8s ease-in-out infinite; }
+.rd__list li.is-now time { color: var(--yellow); }
+
+.rd__recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rd__recent li { display: grid; grid-template-columns: 54px 1fr; gap: 4px 12px; align-items: baseline; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.rd__recent span { font-family: var(--f-osd); font-size: 1.2rem; color: var(--blue); }
+.rd__recent small { grid-column: 2; color: var(--muted); }
+.rd__recent .rd__empty { display: block; color: var(--muted); }
+
+.rd__tv { margin-top: 22px; padding: 18px; border-radius: 16px; background: var(--surface2); border: 1px solid var(--line); display: grid; gap: 8px; justify-items: start; }
+.rd__tv span { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.rd__tv b { font-size: 1.05rem; line-height: 1.3; }
+
+/* ---------- Barra fissa: compare quando la radio suona e la testata non si vede ---------- */
+.rdbar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 46; max-width: 760px; margin-inline: auto; display: flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border-radius: 999px; background: rgba(7, 22, 66, .94); border: 1px solid rgba(160, 220, 255, .4); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #fff; box-shadow: 0 14px 34px -10px rgba(0, 0, 0, .75); }
+.rdbar[hidden] { display: none; }
+.rdbar__btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--yellow); color: #0a0920; display: grid; place-items: center; cursor: pointer; }
+.rdbar__btn svg { width: 22px; height: 22px; fill: currentColor; }
+.rdbar__txt { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
+.rdbar__txt b { font-size: .85rem; letter-spacing: .02em; }
+.rdbar__txt span { font-size: .82rem; color: #d6efff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rdbar__go { flex: none; color: var(--yellow); font-weight: 700; font-size: .85rem; text-decoration: none; }
+
+
+
+@keyframes rd-pulse { 50% { opacity: .35; } }
+@keyframes rd-eq { from { height: 4px; } to { height: 28px; } }
+@keyframes rd-bar { from { height: 4px; } to { height: 26px; } }
+@keyframes rd-nudge { 0%, 100% { box-shadow: 0 0 24px rgba(255, 210, 63, .5); } 50% { box-shadow: 0 0 0 10px rgba(255, 210, 63, .18), 0 0 34px rgba(255, 210, 63, .7); } }
+
+@media (max-width: 900px) {
+  .rd__cols { grid-template-columns: 1fr; gap: 30px; padding: 36px 0 60px; }
+  .rd__vol { display: none; }
+}
+@media (max-width: 640px) {
+  .rd__hero { min-height: 560px; }
+  .rd__in { padding: 44px 0 170px; }
+  .rd__logo { flex-direction: column; gap: 12px; }
+  .rd__name { font-size: clamp(5.4rem, 27vw, 8rem); }
+  .rd__bars, .rd__next { display: none; }
+  .rd__player { bottom: 14px; gap: 12px; padding: 10px 14px 10px 10px; }
+  .rd__play { width: 54px; height: 54px; }
+  .rd__list li { grid-template-columns: 1fr auto; row-gap: 2px; }
+  .rd__list time { grid-column: 1 / -1; font-size: 1.2rem; }
+  .rdbar__go { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rd *, .rdbar * { animation: none !important; }
+  .rd__eq i { height: 14px; }
+}
