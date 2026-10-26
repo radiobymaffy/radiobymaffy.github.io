@@ -44,7 +44,9 @@
     prog: $('#rdProg'), title: $('#rdTitle'), next: $('#rdNext'),
     vol: $('#rdVol'), list: $('#rdList'), recent: $('#rdRecent'), news: $('#rdNews'), hero: $('#rdHero'), note: $('#rdNote')
   };
-  let vol = Number(store.get('rbm-volume'));
+  // Al primo ascolto non c'è un volume salvato: Number(null) darebbe 0 (silenzio), quindi si parte da 0,8. Un volume scelto dall'ascoltatore (anche 0) si rispetta.
+  const volSalvato = store.get('rbm-volume');
+  let vol = volSalvato === null || volSalvato === '' ? NaN : Number(volSalvato);
   if (!(vol >= 0 && vol <= 1)) vol = 0.8;
   el.vol.value = vol;
 
