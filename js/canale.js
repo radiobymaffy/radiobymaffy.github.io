@@ -124,9 +124,11 @@
   /* ---------------- I contatori che restano ---------------- */
   const AB = 'https://abacus.jasoncameron.dev/';
   const giornoRoma = (ms) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms == null ? Date.now() : ms).replace(/-/g, '');
-  const conta = (chiave) => fetch(AB + 'hit/' + NS + '/' + chiave, { cache: 'no-store' }).then((r) => r.ok).catch(() => false);
+  // il servizio è gratuito e ogni tanto è lento o dà errore: dopo 12 secondi si rinuncia (e si riprova al prossimo "ci sono ancora")
+  const chiedi = (indirizzo) => { const o = { cache: 'no-store' }; if (window.AbortSignal && AbortSignal.timeout) o.signal = AbortSignal.timeout(12000); return fetch(indirizzo, o); };
+  const conta = (chiave) => chiedi(AB + 'hit/' + NS + '/' + chiave).then((r) => r.ok).catch(() => false);
   // null = non so (il servizio non risponde), 0 = nessuno ancora
-  const leggi = (chiave) => fetch(AB + 'get/' + NS + '/' + chiave, { cache: 'no-store' })
+  const leggi = (chiave) => chiedi(AB + 'get/' + NS + '/' + chiave)
     .then((r) => (r.status === 404 ? 0 : r.ok ? r.json().then((j) => Number(j.value) || 0) : null)).catch(() => null);
 
   // Ogni apparecchio si conta UNA volta al giorno e UNA volta in tutto. tipo: 'v' = è passato dal sito, 'a' = ha acceso la radio.
