@@ -13,8 +13,10 @@
   const NOME = 'rbm-ascolti-5d1c8e3a';                   // nome dei contatori (tutto suo, scelto a caso)
   const NS = NOME + (prova ? '-prova' : '');
   const BASE = 'rbm1/5d1c8e3a7f20b4' + (prova ? '/prova' : '');
-  const T = { hb: BASE + '/hb', q: BASE + '/q' };        // hb = "sono qui", q = "chi c'è?"
+  const T = { hb: BASE + '/hb', q: BASE + '/q', onda: BASE + '/onda' };   // hb = "sono qui", q = "chi c'è?", onda = "Maffy va in onda" (firmato dalla Regia)
   const INIZIO = '20261029';                             // il primo giorno di conteggio
+  const CHIAVE_ONDA = {"kty":"EC","crv":"P-256","x":"-1yAnSidQEcoBIAT6dnvf56EfQt04g-nPZ32YkTJilw","y":"JsujXiahZYYGCiZUlw5_eNepxXDN6o4WCiiX0kRr3Qs"};                              // chiave PUBBLICA con cui si controlla la firma di "vado in onda" (la scrive tools/radio-onda-chiavi.mjs)
+  const CANALE_YT = 'UCO_wLalyvKhW6F9pvvqusPg';          // il canale YouTube di Tauranowebtv: se la Regia non dice quale video, si apre la sua diretta in corso
   const KEEP = 60;                                       // secondi: dopo questo silenzio il server ci dà per usciti
 
   const te = new TextEncoder(), td = new TextDecoder();
@@ -156,5 +158,32 @@
     } finally { inCorso[tipo] = false; }
   }
 
-  window.RbmCanale = { apri, T, NS, INIZIO, prova, giornoRoma, conta, leggi, segna, store, SERVER, pausa };
+  /* ---------------- "Maffy va in onda": i messaggi firmati dalla Regia ----------------
+     L'argomento è pubblico, quindi ogni messaggio porta una firma (ECDSA P-256) che solo la Regia sa fare.
+     Messaggio: {"d":"<testo>","f":"<firma base64, 64 byte>"} dove d = {"v":1,"s":"on"|"off","t":<millisecondi>,"y":"<id video o vuoto>"}.
+     Si accetta solo se la firma è giusta, l'ora è entro 2 minuti da quella del sito e l'id del video è fatto bene.
+     Qualunque dubbio (niente chiave, niente WebCrypto, firma sbagliata, messaggio strano) = si ignora: la radio resta in scaletta. */
+  const TOLLERANZA_ORA = 120000;
+  let chiaveOnda = null;
+  const dalBase64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  async function verificaOnda(grezzo, oraMs) {
+    try {
+      if (!CHIAVE_ONDA || !window.crypto || !window.crypto.subtle) return null;
+      const m = JSON.parse(grezzo);
+      if (!m || typeof m.d !== 'string' || typeof m.f !== 'string') return null;
+      const firma = dalBase64(m.f);
+      if (firma.length !== 64) return null;
+      if (!chiaveOnda) chiaveOnda = await window.crypto.subtle.importKey('jwk', CHIAVE_ONDA, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+      if (!(await window.crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, chiaveOnda, firma, te.encode(m.d)))) return null;
+      const p = JSON.parse(m.d);
+      if (!p || p.v !== 1 || (p.s !== 'on' && p.s !== 'off') || !Number.isFinite(p.t)) return null;
+      if (Math.abs((oraMs == null ? Date.now() : oraMs) - p.t) > TOLLERANZA_ORA) return null;
+      if (p.y != null && typeof p.y !== 'string') return null;
+      const y = p.y || '';
+      if (y && !/^[A-Za-z0-9_-]{11}$/.test(y)) return null;
+      return { s: p.s, t: p.t, y };
+    } catch (e) { return null; }
+  }
+
+  window.RbmCanale = { apri, T, NS, INIZIO, prova, giornoRoma, conta, leggi, segna, store, SERVER, pausa, verificaOnda, CANALE_YT };
 })();

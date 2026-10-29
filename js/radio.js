@@ -66,6 +66,7 @@
   const deck = [0, 1].map(() => { const a = new Audio(); a.preload = 'auto'; return { a, key: null, bad: false }; });
   deck.forEach((d) => d.a.addEventListener('error', () => { if (d.key) d.bad = true; }));
   let cur = 0, playing = false, current = null, timer = 0;
+  let diretta = null;                              // { y } mentre Maffy è in diretta: la scaletta tace, ma chi voleva ascoltare resta "in ascolto"
   const keyOf = (it) => it.src + '@' + it.ini;
 
   function carica(d, it) {
@@ -90,7 +91,7 @@
     metadati(it);
   }
   function tick() {
-    if (!playing) return;
+    if (!playing || diretta) return;
     const t = now(), a = radio.adesso(t), it = a.cur;
     if (!it) { if (current) { current.d.a.pause(); current = null; } return; }
     if (!current || current.d.key !== keyOf(it)) vaiA(it, a.offset);
@@ -130,6 +131,26 @@
     paint(true);
     document.dispatchEvent(new CustomEvent('radio-stato', { detail: { suona: false } }));
   }
+  // Maffy va in onda (lo decide js/onda.js, solo con un segnale firmato dalla Regia): le due casse tacciono; alla fine la scaletta riparte
+  // dal punto in cui è adesso (come una radio vera), grazie al solito controllo sull'orario.
+  function entraDiretta(y) {
+    diretta = { y: y || '' };
+    deck.forEach((d) => { d.a.pause(); d.key = null; });
+    current = null;
+    if ('mediaSession' in navigator && window.MediaMetadata) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'In diretta con Maffy', artist: 'Radio ByMaffy', album: 'Diretta',
+        artwork: [{ src: 'img/icona-512.png', sizes: '512x512', type: 'image/png' }, { src: 'img/icona-180.png', sizes: '180x180', type: 'image/png' }]
+      });
+    }
+    paint(true);
+  }
+  function esciDiretta() {
+    if (!diretta) return;
+    diretta = null; current = null;
+    paint(true);
+    if (playing) tick();
+  }
   const alterna = () => (playing ? spegni() : accendi());
   el.play.addEventListener('click', alterna);
   el.cta.addEventListener('click', alterna);
@@ -163,19 +184,20 @@
     const t = now(), a = radio.adesso(t), it = a.cur;
     const s = saluto(core.parts(t).h);
     if (s !== salutoTesto) { salutoTesto = s; el.hi.textContent = s; }
-    const chiave = (it ? keyOf(it) : 'x') + '|' + playing + '|' + a.slot.chiave;
+    const chiave = (it ? keyOf(it) : 'x') + '|' + playing + '|' + a.slot.chiave + '|' + (diretta ? 'D' + diretta.y : '');
     if (forza || chiave !== ultimaChiave) {
       ultimaChiave = chiave;
-      el.prog.textContent = a.slot.nome;
-      el.title.textContent = ENABLED ? (it ? titoloBrano(it) + (dettaglio(it) ? ' · ' + dettaglio(it) : '') : 'Radio ByMaffy') : 'A breve in onda';
+      el.prog.textContent = diretta ? 'IN DIRETTA' : a.slot.nome;
+      el.title.textContent = ENABLED ? (diretta ? 'Maffy è in diretta' : it ? titoloBrano(it) + (dettaglio(it) ? ' · ' + dettaglio(it) : '') : 'Radio ByMaffy') : 'A breve in onda';
       el.next.textContent = hhmm(a.prossimo.start) + ' · ' + a.prossimo.nome;
-      barTxt.textContent = a.slot.nome + ' · ' + titoloBrano(it);
+      barTxt.textContent = diretta ? 'IN DIRETTA con Maffy' : a.slot.nome + ' · ' + titoloBrano(it);
       sec.classList.toggle('is-playing', playing);
+      sec.classList.toggle('is-live', !!diretta);
       for (const b of [el.play, el.cta]) b.setAttribute('aria-pressed', String(playing));
-      el.play.setAttribute('aria-label', playing ? 'Metti in pausa la radio' : 'Accendi la radio');
-      $('#rdPlayTxt').textContent = !ENABLED ? 'A breve' : playing ? 'In ascolto' : 'Accendi la radio';
-      el.ctaTxt.textContent = !ENABLED ? 'A breve in onda' : playing ? 'In ascolto · pausa' : 'Ascolta ora';
-      el.sub.textContent = playing ? 'La radio è accesa: puoi anche muoverti nella pagina, la musica continua.' : 'Basta un tocco: la radio parte subito, proprio a metà di quello che sta andando in onda.';
+      el.play.setAttribute('aria-label', playing ? 'Metti in pausa la radio' : diretta ? 'Ascolta la diretta' : 'Accendi la radio');
+      $('#rdPlayTxt').textContent = !ENABLED ? 'A breve' : playing ? 'In ascolto' : diretta ? 'Ascolta la diretta' : 'Accendi la radio';
+      el.ctaTxt.textContent = !ENABLED ? 'A breve in onda' : diretta ? (playing ? 'In diretta · pausa' : 'Ascolta la diretta') : playing ? 'In ascolto · pausa' : 'Ascolta ora';
+      el.sub.textContent = diretta ? (playing ? 'Maffy è in diretta: quando finisce, la radio riparte da sola.' : 'Maffy è in diretta adesso: tocca il tasto per ascoltarlo.') : playing ? 'La radio è accesa: puoi anche muoverti nella pagina, la musica continua.' : 'Basta un tocco: la radio parte subito, proprio a metà di quello che sta andando in onda.';
       document.body.classList.toggle('radio-on', playing);
       const ult = radio.ultimiBrani(t, 5);
       el.recent.innerHTML = ult.length ? ult.map((x) => `<li><span>${hhmm(x.ini)}</span><b>${esc(x.t)}</b><small>${esc(core.NOMI_MUSICA[x.c] || '')}</small></li>`).join('') : '<li class="rd__empty">Appena iniziato: i brani suonati compariranno qui.</li>';
@@ -208,7 +230,10 @@
   // per le prove: cosa stanno facendo le due casse
   window.RADIO = {
     adesso: (t) => radio.adesso(t == null ? now() : t), core: radio,
-    ora: () => { const a = radio.adesso(now()); return { programma: a.slot.nome, titolo: titoloBrano(a.cur) }; },   // cosa sta andando in onda (per il conteggio)
+    ora: () => { if (diretta) return { programma: 'In diretta', titolo: 'Maffy in diretta' }; const a = radio.adesso(now()); return { programma: a.slot.nome, titolo: titoloBrano(a.cur) }; },   // cosa sta andando in onda (per il conteggio)
+    orologio: now,                                                       // l'ora del sito (corretta se l'orologio del telefono è sbagliato)
+    suona: () => playing,                                                // chi ascolta ha acceso la radio?
+    diretta: { entra: entraDiretta, esci: esciDiretta, attiva: () => !!diretta },
     stato: () => deck.map((d) => ({ chiave: d.key, secondi: Math.round(d.a.currentTime * 10) / 10, pausa: d.a.paused, pronto: d.a.readyState, errore: d.a.error ? d.a.error.code : 0, file: d.a.src.slice(-48), inizio: d.a.src.slice(0, 48) }))
   };
 })();

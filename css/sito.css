@@ -51,6 +51,22 @@ a { color: inherit; }
 .ghost svg { width: 22px; height: 22px; fill: var(--yellow); }
 .hi__sub { margin: 12px 0 0; font-size: .88rem; color: #d6efff; text-shadow: 0 1px 8px rgba(6, 30, 80, .6); }
 
+/* ---------- La diretta di Maffy: scritta rossa, riquadro del video, messaggio di fine ---------- */
+.live { margin: 20px auto 0; max-width: 560px; }
+.live[hidden], .live__fine[hidden] { display: none; }
+.live__top { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; font: italic 800 1.7rem / 1 'Barlow Condensed', sans-serif; letter-spacing: .04em; text-transform: uppercase; text-shadow: 0 3px 0 rgba(6, 30, 80, .5); }
+.live__pill { display: inline-flex; align-items: center; gap: 8px; background: #e63946; color: #fff; padding: 5px 14px 5px 11px; border-radius: 999px; font: 700 .85rem 'DM Sans', sans-serif; letter-spacing: .08em; text-shadow: none; box-shadow: 0 0 22px rgba(230, 57, 70, .55); }
+.live__pill i { width: 9px; height: 9px; border-radius: 50%; background: #fff; animation: rd-live 1.4s ease-in-out infinite; }
+@keyframes rd-live { 50% { opacity: .25; } }
+.live__video { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; padding: 16px; text-align: center; overflow: hidden; background: rgba(6, 18, 56, .82); border: 1px solid rgba(255, 255, 255, .38); border-radius: 14px; box-shadow: 0 12px 40px rgba(6, 18, 56, .55); }
+.live__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.live__poster { color: #d6efff; font-size: 1rem; }
+.live__video.con-video .live__poster { display: none; }
+.live__nota { margin: 10px 0 0; font-size: .88rem; color: #d6efff; text-shadow: 0 1px 8px rgba(6, 30, 80, .6); }
+.live__fine { margin: 16px auto 0; max-width: 560px; padding: 10px 16px; border-radius: 12px; background: rgba(7, 22, 66, .6); border: 1px solid rgba(255, 210, 63, .6); font-weight: 500; }
+.rd.is-live .hi__p { display: none; }
+@media (prefers-reduced-motion: reduce) { .live__pill i { animation: none; } }
+
 /* ---------- Scaletta e brani (ritocchi) ---------- */
 .rd__cols { padding: 54px 0 40px; }
 .rd__col h2 { font: italic 800 2.1rem 'Barlow Condensed', sans-serif; letter-spacing: .02em; text-transform: uppercase; color: var(--yellow); margin: 0 0 14px; }

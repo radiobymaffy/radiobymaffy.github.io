@@ -30,9 +30,12 @@
   const canale = C.apri({
     id: 'l' + id,
     will: { topic: C.T.hb, payload: JSON.stringify({ i: id, s: 'x' }) },     // se la pagina sparisce di colpo, il server avvisa lui
-    iscrivi: [C.T.q],
+    iscrivi: [C.T.q, C.T.onda],
     onApri: (s) => s.pubblica(C.T.hb, messaggio('n')),
-    onMessaggio: (topic) => { if (topic === C.T.q) setTimeout(() => annuncia('h'), Math.random() * 1500); }   // "chi c'è?": rispondo, ma non tutti insieme
+    onMessaggio: (topic, testo) => {
+      if (topic === C.T.q) setTimeout(() => annuncia('h'), Math.random() * 1500);                       // "chi c'è?": rispondo, ma non tutti insieme
+      else if (topic === C.T.onda) document.dispatchEvent(new CustomEvent('radio-onda-messaggio', { detail: testo }));   // "Maffy va in onda": lo controlla js/onda.js
+    }
   });
   function annuncia(e) { canale.pubblica(C.T.hb, messaggio(e)); }
   function conta() { C.segna('v'); if (suona) C.segna('a'); }

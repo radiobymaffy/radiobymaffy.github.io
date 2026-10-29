@@ -66,6 +66,12 @@
             </a>
           </div>
           <p class="hi__sub" id="rdSub">Basta un tocco: la radio parte subito, proprio a metà di quello che sta andando in onda.</p>
+          <div class="live" id="rdLive" hidden>
+            <div class="live__top"><span class="live__pill"><i></i>IN DIRETTA</span><b>Maffy è in onda</b></div>
+            <div class="live__video" id="rdLiveVideo"><span class="live__poster">Tocca «Ascolta la diretta» per sentirlo e vederlo.</span></div>
+            <p class="live__nota">Quando la diretta finisce, la radio riparte da sola.</p>
+          </div>
+          <p class="live__fine" id="rdLiveFine" role="status" hidden>La diretta è finita: riprende la radio.</p>
         </div>
       </div>
 
@@ -121,7 +127,7 @@
   <div class="wrap">
     <div>
       <a class="mini" href="#radio" aria-label="Radio ByMaffy, torna in alto"><span class="t"><span>RADIO</span></span><b>BYMAFFY</b></a>
-      <p>La radio del paese, sempre accesa, 24 ore su 24.<br>Una voce di Tauranowebtv · Taurano (AV).<br><small class="priv">Contiamo in forma anonima quante persone ascoltano: nessun nome, nessun dato personale.</small></p>
+      <p>La radio del paese, sempre accesa, 24 ore su 24.<br>Una voce di Tauranowebtv · Taurano (AV).<br><small class="priv">Contiamo in forma anonima quante persone ascoltano: nessun nome, nessun dato personale. Quando Maffy è in diretta, il video arriva da YouTube.</small></p>
     </div>
     <nav aria-label="Collegamenti in fondo">
       <a href="#radio">Ascolta la radio</a>
@@ -141,5 +147,6 @@
 <script src="js/radio.js"></script>
 <script src="js/canale.js"></script>
 <script src="js/presenza.js"></script>
+<script src="js/onda.js"></script>
 </body>
 </html>

@@ -191,14 +191,34 @@
     let a = 0, v = 0; presenti.forEach((p) => { if (p.giaPresente) { if (p.s === 'p') a++; else v++; } });
     if (a + v) evento('', 'Già collegati quando hai aperto la pagina: ' + (a + v), a + ' in ascolto · ' + v + ' sul sito');
   }
+  /* ---- "Maffy va in onda": il segnale firmato dalla Regia (lo stesso che vede il sito) ---- */
+  let ondaT = 0, ondaScade = 0, ondaDa = 0;
+  async function riceviOnda(grezzo) {
+    const m = await C.verificaOnda(grezzo);
+    if (!m || m.t <= ondaT) return;
+    ondaT = m.t;
+    if (m.s === 'on') {
+      ondaScade = Date.now() + 20000;
+      if (!ondaDa) { ondaDa = Date.now(); evento('p', '📻 Sei in onda sulla radio', 'La scaletta tace: chi ascolta vede la tua diretta'); }
+    } else if (ondaDa) { ondaDa = 0; evento('x', '📻 Sei tornato alla scaletta', ''); }
+    mostraOnda();
+  }
+  function mostraOnda() {
+    if (ondaDa && Date.now() > ondaScade) { ondaDa = 0; evento('x', '📻 La diretta sulla radio non si sente più: torna la scaletta', ''); }
+    const s = Math.floor((Date.now() - ondaDa) / 1000);
+    $('#aOnda').hidden = !ondaDa;
+    if (ondaDa) $('#aOndaDa').textContent = pad(Math.floor(s / 60)) + ':' + pad(s % 60);
+  }
+  setInterval(mostraOnda, 1000);
+
   canale = C.apri({
-    id: idDash, tutti: true, iscrivi: [C.T.hb],
+    id: idDash, tutti: true, iscrivi: [C.T.hb, C.T.onda],
     onApri: (s) => {
       if (!riassuntoFissato) { riassuntoFissato = true; setTimeout(riassunto, 4000); }
       s.pubblica(C.T.q, '?');                                    // "chi c'è?": tutti quelli già collegati rispondono
       statoCanale();
     },
-    onMessaggio: (topic, x) => { if (topic === C.T.hb) ricevi(x); },
+    onMessaggio: (topic, x) => { if (topic === C.T.hb) ricevi(x); else if (topic === C.T.onda) riceviOnda(x); },
     onStato: statoCanale
   });
   statoCanale();
