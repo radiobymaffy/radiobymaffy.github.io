@@ -127,9 +127,21 @@
   // il servizio è gratuito e ogni tanto è lento o dà errore: dopo 12 secondi si rinuncia (e si riprova al prossimo "ci sono ancora")
   const chiedi = (indirizzo) => { const o = { cache: 'no-store' }; if (window.AbortSignal && AbortSignal.timeout) o.signal = AbortSignal.timeout(12000); return fetch(indirizzo, o); };
   const conta = (chiave) => chiedi(AB + 'hit/' + NS + '/' + chiave).then((r) => r.ok).catch(() => false);
-  // null = non so (il servizio non risponde), 0 = nessuno ancora
-  const leggi = (chiave) => chiedi(AB + 'get/' + NS + '/' + chiave)
-    .then((r) => (r.status === 404 ? 0 : r.ok ? r.json().then((j) => Number(j.value) || 0) : null)).catch(() => null);
+  const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
+  // null = non so (il servizio non risponde), 0 = nessuno ancora.
+  // Il servizio ammette 30 richieste ogni 10 secondi per indirizzo: se dice "troppe richieste" (429) si aspetta e si riprova.
+  async function leggi(chiave) {
+    for (let t = 0; t < 4; t++) {
+      try {
+        const r = await chiedi(AB + 'get/' + NS + '/' + chiave);
+        if (r.status === 404) return 0;
+        if (r.ok) return Number((await r.json()).value) || 0;
+        if (r.status !== 429) return null;
+      } catch (e) { return null; }
+      await pausa(3000 + t * 2000);
+    }
+    return null;
+  }
 
   // Ogni apparecchio si conta UNA volta al giorno e UNA volta in tutto. tipo: 'v' = è passato dal sito, 'a' = ha acceso la radio.
   const inCorso = {};
@@ -144,5 +156,5 @@
     } finally { inCorso[tipo] = false; }
   }
 
-  window.RbmCanale = { apri, T, NS, INIZIO, prova, giornoRoma, conta, leggi, segna, store, SERVER };
+  window.RbmCanale = { apri, T, NS, INIZIO, prova, giornoRoma, conta, leggi, segna, store, SERVER, pausa };
 })();

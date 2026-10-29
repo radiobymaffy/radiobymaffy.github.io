@@ -110,10 +110,11 @@
   tasto();
 
   /* ---------------- I contatori che restano ---------------- */
-  const dati = {};                                           // chiave -> numero (o null se il servizio non risponde)
+  const dati = {};                                           // chiave -> numero (quello che si sa: i giorni passati restano in memoria)
+  const finale = {};                                         // giorno -> true: letto dopo la mezzanotte, non cambia più e non si rilegge
   const COPIA = 'rbm-ascolti-copia' + (C.prova ? '-prova' : '');
   let giornoCaricato = '', giorni = [], daCopia = false;
-  try { Object.assign(dati, JSON.parse(store.get(COPIA) || '{}')); } catch (e) { /* nessuna copia */ }
+  try { const c = JSON.parse(store.get(COPIA) || '{}'); Object.assign(dati, c.d || {}); Object.assign(finale, c.f || {}); } catch (e) { /* nessuna copia */ }
 
   function giorniRecenti(n) {
     const oggi = C.giornoRoma(), y = +oggi.slice(0, 4), m = +oggi.slice(4, 6), d = +oggi.slice(6, 8), out = [];
@@ -124,20 +125,28 @@
     return out;
   }
   const breve = (g) => g.slice(6, 8) + '/' + g.slice(4, 6);
+  // Il servizio ammette 30 richieste ogni 10 secondi: con molte chiavi si va una alla volta, a passo calmo.
   async function leggiMolti(chiavi) {
+    const lento = chiavi.length > 6, lette = new Set();
     let k = 0;
-    await Promise.all(Array.from({ length: 5 }, async () => {
+    await Promise.all(Array.from({ length: lento ? 1 : 4 }, async () => {
       while (k < chiavi.length) {
         const chiave = chiavi[k++], v = await C.leggi(chiave);
-        if (v === null) daCopia = true; else dati[chiave] = v;
+        if (v === null) daCopia = true; else { dati[chiave] = v; lette.add(chiave); }
+        if (lento) { await C.pausa(400); mostra(); }
       }
     }));
-    store.set(COPIA, JSON.stringify(dati));
+    store.set(COPIA, JSON.stringify({ d: dati, f: finale }));
+    return lette;                                            // le chiavi lette davvero adesso (le altre restano quelle di prima)
   }
   async function caricaTutto() {
     giornoCaricato = C.giornoRoma(); giorni = giorniRecenti(14);
     daCopia = false;
-    await leggiMolti(['a-tot', 'v-tot', ...giorni.flatMap((g) => ['a-' + g, 'v-' + g])]);
+    // i giorni passati già letti una volta dopo la loro fine non si rileggono; si legge sempre oggi e il totale
+    const daLeggere = giorni.filter((g) => g === giornoCaricato || !finale[g]);
+    const lette = await leggiMolti(['a-tot', 'v-tot', ...daLeggere.flatMap((g) => ['a-' + g, 'v-' + g])]);
+    for (const g of daLeggere) if (g < giornoCaricato && lette.has('a-' + g) && lette.has('v-' + g)) finale[g] = true;
+    store.set(COPIA, JSON.stringify({ d: dati, f: finale }));
     mostra();
   }
   async function ricarica() {
