@@ -118,6 +118,7 @@
     timer = setInterval(tick, 250);
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
     paint(true);
+    document.dispatchEvent(new CustomEvent('radio-stato', { detail: { suona: true } }));   // lo ascolta il conteggio degli ascoltatori
   }
   function spegni() {
     if (!playing) return;
@@ -127,6 +128,7 @@
     current = null;
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     paint(true);
+    document.dispatchEvent(new CustomEvent('radio-stato', { detail: { suona: false } }));
   }
   const alterna = () => (playing ? spegni() : accendi());
   el.play.addEventListener('click', alterna);
@@ -206,6 +208,7 @@
   // per le prove: cosa stanno facendo le due casse
   window.RADIO = {
     adesso: (t) => radio.adesso(t == null ? now() : t), core: radio,
+    ora: () => { const a = radio.adesso(now()); return { programma: a.slot.nome, titolo: titoloBrano(a.cur) }; },   // cosa sta andando in onda (per il conteggio)
     stato: () => deck.map((d) => ({ chiave: d.key, secondi: Math.round(d.a.currentTime * 10) / 10, pausa: d.a.paused, pronto: d.a.readyState, errore: d.a.error ? d.a.error.code : 0, file: d.a.src.slice(-48), inizio: d.a.src.slice(0, 48) }))
   };
 })();

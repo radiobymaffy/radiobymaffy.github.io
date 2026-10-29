@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Chi ascolta — Radio ByMaffy</title>
+  <meta name="theme-color" content="#061238">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/icona-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/ascolti.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mini" href="./" aria-label="Radio ByMaffy, vai alla radio"><span class="t"><span>RADIO</span></span><b>BYMAFFY</b></a>
+    <span class="conn" id="aConn" role="status"><i></i><span id="aConnTxt">Mi collego…</span></span>
+    <button class="tasto" id="aSuono" type="button" aria-pressed="true">🔔 Suono: sì</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="prova" id="aProva" hidden><b>Prova.</b> Qui non vedi gli ascoltatori veri della radio online, ma solo quelli della prova.</p>
+
+  <div class="griglia">
+  <section class="adesso" aria-labelledby="h-adesso">
+    <h1 id="h-adesso"><span class="punto"></span> In ascolto adesso</h1>
+    <div class="grande" id="aAscolto" aria-live="polite">0</div>
+    <p class="sotto" id="aSito">Sul sito, senza radio accesa: 0</p>
+  </section>
+
+  <section class="cifre" aria-label="Contatori">
+    <div class="carta">
+      <h2>Oggi</h2>
+      <dl>
+        <div><dt>Hanno ascoltato la radio</dt><dd id="aOggiA">–</dd></div>
+        <div><dt>Sono passati dal sito</dt><dd id="aOggiV">–</dd></div>
+      </dl>
+    </div>
+    <div class="carta">
+      <h2>In totale</h2>
+      <dl>
+        <div><dt>Hanno ascoltato la radio</dt><dd id="aTotA">–</dd></div>
+        <div><dt>Sono passati dal sito</dt><dd id="aTotV">–</dd></div>
+      </dl>
+      <p class="mini-nota" id="aDal"></p>
+    </div>
+  </section>
+
+  <section class="carta giorni" aria-labelledby="h-giorni">
+    <h2 id="h-giorni">Ultimi giorni</h2>
+    <div class="legenda"><span><i class="l-a"></i> hanno ascoltato</span><span><i class="l-v"></i> sono passati dal sito</span></div>
+    <div class="barre" id="aBarre" role="img" aria-label="Grafico degli ultimi giorni"></div>
+  </section>
+
+  <section class="carta diretta" aria-labelledby="h-diretta">
+    <h2 id="h-diretta">In diretta</h2>
+    <ol class="eventi" id="aEventi" aria-live="polite"><li class="vuoto">Aspetto che qualcuno si colleghi…</li></ol>
+  </section>
+  </div>
+
+  <p class="nota">Pagina riservata, non è collegata dal sito: tienila tra i preferiti. Ogni telefono o computer si conta una volta al giorno e una volta in tutto; non si conoscono nomi né altri dati.</p>
+</main>
+
+<noscript><p class="nota">Serve JavaScript per vedere i numeri.</p></noscript>
+<script src="js/canale.js"></script>
+<script src="js/ascolti.js"></script>
+</body>
+</html>

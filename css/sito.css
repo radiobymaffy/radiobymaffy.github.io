@@ -81,6 +81,7 @@ footer { border-top: 1px solid var(--line); padding: 34px 0 50px; color: var(--m
 footer .wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
 footer .mini { margin-bottom: 10px; }
 footer p { margin: 0; }
+footer .priv { display: inline-block; margin-top: 8px; font-size: .8rem; opacity: .85; }
 footer nav { display: grid; gap: 6px; justify-items: start; }
 footer nav a { text-decoration: none; }
 footer nav a:hover { color: var(--yellow); }
